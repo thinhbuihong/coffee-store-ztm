@@ -16,8 +16,7 @@ export async function getStaticProps(context) {
   }
 }
 
-export default function Home(props) {
-  console.log("===", props);
+export default function Home({ coffeeStores }) {
   const handleOnBannerBtnClick = () => {
     console.log("hi banner button",);
   }
@@ -36,18 +35,24 @@ export default function Home(props) {
         <Image src="/static/hero-image.png" width={700} height={400} alt="hero-image" />
       </div>
 
-      <div className={styles.cardLayout}>
-        {
-          props.coffeeStores.map(store => {
-            return (<Card name={store.name}
-              key={store.id}
-              imgUrl={store.imgUrl}
-              href={`/coffee-store/${store.id}`}
-              className={styles.card}
-            />)
-          })
-        }
-      </div>
+      {coffeeStores.length > 0 &&
+        <>
+
+          <h2 className={styles.heading2}>Toronto Stores</h2>
+
+          <div className={styles.cardLayout}>
+            {
+              coffeeStores.map(store => {
+                return (<Card name={store.name}
+                  key={store.id}
+                  imgUrl={store.imgUrl}
+                  href={`/coffee-store/${store.id}`}
+                  className={styles.card}
+                />)
+              })
+            }
+          </div>
+        </>}
     </div>
   )
 }
