@@ -1,29 +1,35 @@
+import cls from 'classnames';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router'
-import React from 'react'
-import cls from 'classnames';
+import { useRouter } from 'next/router';
+import React from 'react';
+import data from '../../data/coffee-stores.json';
+import { fetchCoffeeStores } from '../../lib/coffee-stores';
+import styles from '../../styles/coffee-store.module.css';
 
-import data from '../../data/coffee-stores.json'
-
-import styles from '../../styles/coffee-store.module.css'
-
-export function getStaticPaths() {
+export async function getStaticPaths() {
+	const coffeeStores = await fetchCoffeeStores();
+	const paths = coffeeStores.map((coffeeStore) => ({
+		params: {
+			id: coffeeStore.id.toString(),
+		},
+	}));
 	return {
-		paths: data.map(st => ({
-			params: { id: st.id.toString() }
-		})),
-		fallback: true
-	}
+		paths,
+		fallback: true,
+	};
 }
 
-export function getStaticProps({ params }) {
+export async function getStaticProps({ params }) {
+	const coffeeStores = await fetchCoffeeStores();
+	const findCoffeeStoreById = coffeeStores.find((coffeeStore) => coffeeStore.id.toString() === params.id);
+
 	return {
 		props: {
-			coffeeStore: data.find(st => st.id.toString() === params.id)
-		}
-	}
+			coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
+		},
+	};
 }
 
 function CoffeeStore(props) {
@@ -46,13 +52,13 @@ function CoffeeStore(props) {
 			<div className={styles.container}>
 				<div className={styles.col1}>
 					<div className={styles.backToHomeLink}>
-						<Link href="/">Back to home page</Link>
+						<Link href="/">← Back to home page</Link>
 					</div>
 
 					<div className={styles.nameWrapper}>
 						<h1 className={styles.name}>{name}</h1>
 					</div>
-					<Image src={imgUrl} width={600} height={360} className={styles.storeImg}
+					<Image src={imgUrl || '/static/hero-image.png'} width={600} height={360} className={styles.storeImg}
 						alt={name}></Image>
 				</div>
 
@@ -62,10 +68,11 @@ function CoffeeStore(props) {
 						<p className={styles.text}>{address}</p>
 					</div>
 
-					<div className={styles.iconWrapper}>
+
+					{neighbourhood && <div className={styles.iconWrapper}>
 						<Image src="/static/icons/nearMe.svg" width="24" height="24" alt="icon" />
 						<p className={styles.text}>{neighbourhood}</p>
-					</div>
+					</div>}
 
 					<div className={styles.iconWrapper}>
 						<Image src="/static/icons/star.svg" width="24" height="24" alt="icon" />

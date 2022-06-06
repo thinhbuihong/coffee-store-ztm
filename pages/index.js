@@ -5,13 +5,15 @@ import Card from '../components/card';
 import styles from '../styles/Home.module.css'
 
 import data from '../data/coffee-stores.json'
+import { fetchCoffeeStores } from '../lib/coffee-stores';
 
 //prod: only server side
 //dev: both server and client 
 export async function getStaticProps(context) {
+  const coffeeStores = await fetchCoffeeStores();
   return {
     props: {
-      coffeeStores: data
+      coffeeStores
     }
   }
 }
@@ -45,7 +47,7 @@ export default function Home({ coffeeStores }) {
               coffeeStores.map(store => {
                 return (<Card name={store.name}
                   key={store.id}
-                  imgUrl={store.imgUrl}
+                  imgUrl={store.imgUrl || '/static/hero-image.png'}
                   href={`/coffee-store/${store.id}`}
                   className={styles.card}
                 />)
