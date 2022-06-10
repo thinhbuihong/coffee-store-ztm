@@ -6,6 +6,7 @@ import styles from '../styles/Home.module.css'
 
 import data from '../data/coffee-stores.json'
 import { fetchCoffeeStores } from '../lib/coffee-stores';
+import useTrackLocation from '../hooks/use-track-location';
 
 //prod: only server side
 //dev: both server and client 
@@ -19,9 +20,15 @@ export async function getStaticProps(context) {
 }
 
 export default function Home({ coffeeStores }) {
+  const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } = useTrackLocation()
+
+  console.log("", { latLong, locationErrorMsg });
+
   const handleOnBannerBtnClick = () => {
     console.log("hi banner button",);
+    handleTrackLocation()
   }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -29,8 +36,11 @@ export default function Home({ coffeeStores }) {
       </Head>
 
       <main className={styles.main}>
-        <Banner buttonText="View stores nearby"
+        <Banner buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           handleOnClick={handleOnBannerBtnClick} />
+
+        {locationErrorMsg && <p>Something went wrong: {locationErrorMsg}</p>}
+        {/* {coffeeStoresError && <p>Something went wrong: {coffeeStoresError}</p>} */}
       </main>
 
       <div className={styles.heroImage}>
@@ -38,8 +48,7 @@ export default function Home({ coffeeStores }) {
       </div>
 
       {coffeeStores.length > 0 &&
-        <>
-
+        <div className={styles.sectionWrapper}>
           <h2 className={styles.heading2}>Toronto Stores</h2>
 
           <div className={styles.cardLayout}>
@@ -54,7 +63,7 @@ export default function Home({ coffeeStores }) {
               })
             }
           </div>
-        </>}
+        </div>}
     </div>
   )
 }
