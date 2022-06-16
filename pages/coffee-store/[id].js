@@ -44,6 +44,30 @@ function CoffeeStore(initialProps) {
 		state: { coffeeStores },
 	} = useContext(StoreContext);
 
+	const handleCreateCoffeeStore = async (coffeeStore) => {
+		try {
+			const { id, name, voting, imgUrl, neighbourhood, address } = coffeeStore;
+			const response = await fetch("/api/createCoffeeStore", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					id,
+					name,
+					voting: 0,
+					imgUrl,
+					neighbourhood: neighbourhood || "",
+					address: address || "",
+				}),
+			});
+
+			const dbCoffeeStore = await response.json();
+		} catch (err) {
+			console.error("Error creating coffee store", err);
+		}
+	};
+
 	useEffect(() => {
 		if (isEmpty(initialProps.coffeeStore)) {
 			if (coffeeStores.length > 0) {
@@ -53,12 +77,12 @@ function CoffeeStore(initialProps) {
 
 				if (coffeeStoreFromContext) {
 					setCoffeeStore(coffeeStoreFromContext);
-					// handleCreateCoffeeStore(coffeeStoreFromContext);
+					handleCreateCoffeeStore(coffeeStoreFromContext);
 				}
 			}
 		} else {
 			// SSG
-			// handleCreateCoffeeStore(initialProps.coffeeStore);
+			handleCreateCoffeeStore(initialProps.coffeeStore);
 		}
 	}, [id, initialProps, initialProps.coffeeStore, coffeeStores]);
 
