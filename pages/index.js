@@ -66,6 +66,10 @@ export default function Home(props) {
     <div className={styles.container}>
       <Head>
         <title>Coffee Connoisseur</title>
+        <meta
+          name="description"
+          content="allows you to discover coffee stores"
+        />
       </Head>
 
       <main className={styles.main}>
